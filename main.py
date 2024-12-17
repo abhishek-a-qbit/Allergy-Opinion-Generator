@@ -7,7 +7,6 @@ from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.document_loaders import Docx2txtLoader
 
-st.write("OPENAI_API_KEY:", st.secrets["OPENAI_API_KEY"])
 
 # And the root-level secrets are also accessible as environment variables:
 
