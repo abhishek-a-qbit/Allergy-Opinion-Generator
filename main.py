@@ -22,7 +22,7 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 # Templates
 generate_questions_template = """ you are an expert allergy specialist. 
 Analyze the test report which is given as the query/Question.
-Given the following Context, generate as many specific questions asking the patient 
+Given the following Context, generate 10 specific questions asking the patient 
 whether they have the corresponding symptoms in the context if the test report/query has the condition \"Positive\". 
 
 Question: {question}
