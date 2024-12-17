@@ -13,7 +13,7 @@ st.write("OPENAI_API_KEY:", st.secrets["OPENAI_API_KEY"])
 
 st.write(
     "Has environment variables been set:",
-    os.environ["openai_api_key"] == st.secrets["OPENAI_API_KEY"],
+    os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
 )
 # Initialize OpenAI components
 embeddings = OpenAIEmbeddings()
