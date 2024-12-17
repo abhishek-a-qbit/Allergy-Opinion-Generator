@@ -8,11 +8,14 @@ from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.document_loaders import Docx2txtLoader
 
-# Load environment variables
-load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
-os.environ["OPENAI_API_KEY"] = openai_api_key
+st.write("OPENAI_API_KEY:", st.secrets["openai_api_key"])
 
+# And the root-level secrets are also accessible as environment variables:
+
+st.write(
+    "Has environment variables been set:",
+    os.environ["openai_api_key"] == st.secrets["openai_api_key"],
+)
 # Initialize OpenAI components
 embeddings = OpenAIEmbeddings()
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
