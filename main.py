@@ -163,11 +163,19 @@ if st.session_state["generated_questions"]:
             # Debugging: Display the generated search queries
             st.write("Generated Search Queries:", search_queries)
 
+            if not search_queries:
+                st.error("No search queries were generated.")
+                return
+
             # Step 2: Perform individual searches for each query
             queries = search_queries.split("\n")  # Each query will be in a new line
 
             all_retrieved_images = []
             for query in queries:
+                query = query.strip()
+                if not query:
+                    continue  # Skip empty queries
+
                 try:
                     # Perform the search using each query
                     search_results = agent.run(query)
