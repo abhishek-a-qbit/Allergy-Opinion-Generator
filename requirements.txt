@@ -1,5 +1,7 @@
 streamlit
 docx2txt 
 langchain_community 
+langchain
+langchain_google_community
 langchain-openai 
 faiss-cpu
