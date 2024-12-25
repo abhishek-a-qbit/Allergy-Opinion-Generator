@@ -16,12 +16,6 @@ from io import BytesIO
 os.environ["GOOGLE_API_KEY"] = st.secrets["google_api_key"]
 os.environ["GOOGLE_CSE_ID"] = "65b214484e5a44069"
 
-# Check environment variable setup
-st.write(
-    "Has environment variables been set:",
-    os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
-)
-
 # Initialize OpenAI components
 embeddings = OpenAIEmbeddings()
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
@@ -163,6 +157,9 @@ if st.session_state["generated_questions"]:
             # Debugging: Display the generated search queries
             st.write("Generated Search Queries:", search_queries)
 
+            if not search_queries:
+                st.error("No search queries were generated.")
+                return
 
             # Step 2: Perform individual searches for each query
             queries = search_queries.split("\n")  # Each query will be in a new line
@@ -176,6 +173,9 @@ if st.session_state["generated_questions"]:
                 try:
                     # Perform the search using each query
                     search_results = agent.run(query)
+
+                    # Debugging: Display the search results
+                    st.write(f"Search Results for query '{query}':", search_results)
 
                     # Extract and validate URLs from search results
                     for result in search_results.split("\n"):
