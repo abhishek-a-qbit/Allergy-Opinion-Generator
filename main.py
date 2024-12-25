@@ -14,6 +14,7 @@ from io import BytesIO
 
 # Load API keys from st.secrets
 os.environ["GOOGLE_API_KEY"] = st.secrets["google_api_key"]
+os.environ["GOOGLE_CSE_ID"] = "65b214484e5a44069"
 
 # Check environment variable setup
 st.write(
@@ -45,7 +46,7 @@ Answers: {answers}
 Expert Opinion:"""
 
 # Add search agent
-api_wrapper = GoogleSearchAPIWrapper(api_key=os.environ["GOOGLE_API_KEY"], cse_id="65b214484e5a44069")
+api_wrapper = GoogleSearchAPIWrapper(api_key=os.environ["GOOGLE_API_KEY"], cse_id=os.environ["GOOGLE_CSE_ID"])
 search_tool = GoogleSearchRun(api_wrapper=api_wrapper, api_key=os.environ["GOOGLE_API_KEY"])
 tools = [Tool(name="Search", func=search_tool.run, description="Search the web for images")]
 
