@@ -179,7 +179,7 @@ if st.session_state["generated_questions"]:
 
                     # Extract and validate URLs from search results
                     for result in search_results.split("\n"):
-                        if result.startswith("http"):  # Check if the result is a URL
+                        if result.startswith("http") and (result.endswith(".jpg") or result.endswith(".png")):
                             try:
                                 response = requests.get(result, timeout=5)  # Add timeout for robustness
                                 if response.status_code == 200 and "image" in response.headers["Content-Type"]:
