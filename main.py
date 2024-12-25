@@ -46,7 +46,7 @@ Answers: {answers}
 Expert Opinion:"""
 
 # Add search agent
-api_wrapper = GoogleSearchAPIWrapper(api_key=os.environ["GOOGLE_API_KEY"], cse_id=os.environ["GOOGLE_CSE_ID"])
+api_wrapper = GoogleSearchAPIWrapper(google_api_key=os.environ["GOOGLE_API_KEY"], google_cse_id=os.environ["GOOGLE_CSE_ID"])
 search_tool = GoogleSearchRun(api_wrapper=api_wrapper, api_key=os.environ["GOOGLE_API_KEY"])
 tools = [Tool(name="Search", func=search_tool.run, description="Search the web for images")]
 
