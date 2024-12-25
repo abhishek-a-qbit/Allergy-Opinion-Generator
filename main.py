@@ -7,10 +7,13 @@ from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain.agents import initialize_agent, Tool
-from langchain_google_community import GoogleSearchRun
+from langchain.tools import GoogleSearchRun
 import requests
 from PIL import Image
 from io import BytesIO
+
+# Load API keys from st.secrets
+os.environ["GOOGLE_API_KEY"] = st.secrets["google_api_key"]
 
 # Check environment variable setup
 st.write(
@@ -42,7 +45,7 @@ Answers: {answers}
 Expert Opinion:"""
 
 # Add search agent
-search_tool = GoogleSearchRun()  # Ensure your API keys for the search service are configured
+search_tool = GoogleSearchRun(api_key=os.environ["GOOGLE_API_KEY"])
 tools = [Tool(name="Search", func=search_tool.run, description="Search the web for images")]
 
 # Define agent
