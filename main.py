@@ -1,5 +1,8 @@
 import os
 import tempfile
+import requests
+from PIL import Image
+from io import BytesIO
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
@@ -7,13 +10,12 @@ from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.document_loaders import Docx2txtLoader
 
-
-# And the root-level secrets are also accessible as environment variables:
-
+# Set environment variables for OpenAI API
 st.write(
     "Has environment variables been set:",
     os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
 )
+
 # Initialize OpenAI components
 embeddings = OpenAIEmbeddings()
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
@@ -39,11 +41,13 @@ Expert Opinion:"""
 
 st.title("Allergy Opinion Generator")
 
-# Initialize session state for questions and opinion
+# Initialize session state for questions, opinion, and allergen images
 if "generated_questions" not in st.session_state:
     st.session_state["generated_questions"] = None
 if "generated_opinion" not in st.session_state:
     st.session_state["generated_opinion"] = None
+if "allergen_images" not in st.session_state:
+    st.session_state["allergen_images"] = []
 
 st.header("Step 1: Upload Context Documents")
 
@@ -56,7 +60,6 @@ query_doc = st.file_uploader("Upload the query document (Docx):", type=["docx"],
 
 if st.button("Generate Questions"):
     if context_doc1 and context_doc2 and query_doc:
-        # Temporary file handling
         with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as temp1, \
              tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as temp2, \
              tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as temp_query:
@@ -128,3 +131,37 @@ if st.session_state["generated_questions"]:
 if st.session_state["generated_opinion"]:
     st.subheader("Expert Opinion")
     st.text_area("Generated Opinion:", st.session_state["generated_opinion"], height=300, key="opinion_output")
+
+# Add a section for searching allergen images
+if st.session_state["generated_questions"]:
+    st.subheader("Search Images for Allergens")
+
+    if st.button("Search Allergen Images"):
+        # Extract allergens (you can parse from questions)
+        allergens = [line.split()[0] for line in st.session_state["generated_questions"].splitlines() if "Positive" in line]
+
+        # Search for images for each allergen
+        for allergen in allergens:
+            try:
+                # Unsplash API example
+                search_url = f"https://api.unsplash.com/search/photos?query={allergen}&client_id=YOUR_UNSPLASH_API_KEY"
+                response = requests.get(search_url)
+                data = response.json()
+
+                # Get image URLs
+                if "results" in data and data["results"]:
+                    for image_data in data["results"][:3]:  # Limit to top 3 images per allergen
+                        image_url = image_data["urls"]["small"]
+                        st.session_state["allergen_images"].append((allergen, image_url))
+
+            except Exception as e:
+                st.error(f"Error searching images for {allergen}: {e}")
+
+# Display images if found
+if st.session_state["allergen_images"]:
+    st.subheader("Allergen Images")
+    for allergen, image_url in st.session_state["allergen_images"]:
+        st.markdown(f"### {allergen}")
+        response = requests.get(image_url)
+        img = Image.open(BytesIO(response.content))
+        st.image(img, caption=f"{allergen}", use_column_width=True)
