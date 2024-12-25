@@ -7,7 +7,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain.agents import initialize_agent, Tool
-from langchain.tools import GoogleSearchRun
+langchain_google_community.GoogleSearchRun
 import requests
 from PIL import Image
 from io import BytesIO
