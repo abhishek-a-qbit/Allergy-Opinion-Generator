@@ -161,6 +161,7 @@ if st.session_state["generated_questions"]:
                 st.error("No search queries were generated.")
                 
 
+
             # Step 2: Perform individual searches for each query
             queries = search_queries.split("\n")  # Each query will be in a new line
 
