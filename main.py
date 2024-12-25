@@ -141,27 +141,58 @@ if st.session_state["generated_questions"]:
         else:
             st.error("Please provide answers to the generated questions.")
 
-    # Step 4: Search for allergen images
-    st.subheader("Step 4: Search for Allergen Images")
-    if st.button("Find Relevant Images"):
-        try:
-            questions_list = st.session_state["generated_questions"].split("\n")
-            images_to_find = ", ".join(questions_list[:5])  # Use first 5 questions for brevity
+# Step 4: Search for allergen images
+st.subheader("Step 4: Search for Allergen Images")
 
-            # Create a search prompt
-            search_prompt = f"Find images of plants or allergens related to: {images_to_find}"
-            search_results = agent.run(search_prompt)
+if st.button("Find Relevant Images"):
+    try:
+        # Ensure questions are available
+        if not st.session_state.get("generated_questions"):
+            st.error("Please generate questions first.")
+            raise Exception("No generated questions found.")
 
-            # Extract and display images
-            st.subheader("Retrieved Images")
-            for result in search_results.split("\n"):
-                if result.startswith("http"):  # Check if the result is a URL
-                    response = requests.get(result)
-                    if response.status_code == 200:
+        # Step 1: Generate a search query using LLM
+        search_query_prompt = f"""
+        You are an expert allergist. Based on the following questions, write a concise query to find relevant allergen images or sources:
+        Questions: {st.session_state['generated_questions']}
+        
+        Search Query:"""
+
+        search_query = llm.invoke(search_query_prompt).content.strip()
+
+        # Debugging: Display the generated search query
+        st.write("Generated Search Query:", search_query)
+
+        # Step 2: Use the search query with Google Search Run
+        search_results = agent.run(search_query)
+
+        # Debugging: Display the raw search results
+        st.write("Search Results:", search_results)
+
+        # Step 3: Extract and validate URLs from search results
+        retrieved_images = []
+        for result in search_results.split("\n"):
+            if result.startswith("http"):  # Check if the result is a URL
+                try:
+                    response = requests.get(result, timeout=5)  # Add timeout for robustness
+                    if response.status_code == 200 and "image" in response.headers["Content-Type"]:
                         img = Image.open(BytesIO(response.content))
-                        st.image(img, caption=result, use_column_width=True)
-        except Exception as e:
-            st.error(f"Error during image search: {e}")
+                        retrieved_images.append((img, result))
+                    else:
+                        st.write(f"Skipping non-image URL: {result}")
+                except Exception as e:
+                    st.write(f"Error retrieving image from {result}: {e}")
+
+        # Step 4: Display the images
+        st.subheader("Retrieved Images")
+        if retrieved_images:
+            for img, url in retrieved_images:
+                st.image(img, caption=url, use_column_width=True)
+        else:
+            st.write("No valid images retrieved.")
+
+    except Exception as e:
+        st.error(f"Error during image search: {e}")
 
 # Display opinion if generated
 if st.session_state["generated_opinion"]:
