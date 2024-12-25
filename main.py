@@ -30,7 +30,7 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 generate_questions_template = """ you are an expert allergy specialist. 
 Analyze the test report which is given as the query/Question.
 Given the following Context, generate 10 specific questions asking the patient 
-whether they have the corresponding symptoms in the context if the test report/query has the condition \"Positive\". 
+whether they have the corresponding symptoms in the context if the test report/query has the condition "Positive". 
 
 Question: {question}
 Context: {context}
@@ -141,58 +141,62 @@ if st.session_state["generated_questions"]:
         else:
             st.error("Please provide answers to the generated questions.")
 
-# Step 4: Search for allergen images
-st.subheader("Step 4: Search for Allergen Images")
+    # Step 4: Search for allergen images
+    st.subheader("Step 4: Search for Allergen Images")
+    if st.button("Find Relevant Images"):
+        try:
+            # Ensure questions are available
+            if not st.session_state.get("generated_questions"):
+                st.error("Please generate questions first.")
+                raise Exception("No generated questions found.")
 
-if st.button("Find Relevant Images"):
-    try:
-        # Ensure questions are available
-        if not st.session_state.get("generated_questions"):
-            st.error("Please generate questions first.")
-            raise Exception("No generated questions found.")
+            # Step 1: Generate a search query using LLM
+            search_query_prompt = f"""
+            You are an expert allergist. Based on the following questions, write concise search queries to find relevant allergen images:
+            Questions: {st.session_state['generated_questions']}
+            
+            Generate separate queries for the allergens or symptoms mentioned in the questions:
+            Search Queries:"""
 
-        # Step 1: Generate a search query using LLM
-        search_query_prompt = f"""
-        You are an expert allergist. Based on the following questions, write a concise query to find relevant allergen images or sources:
-        Questions: {st.session_state['generated_questions']}
-        
-        Search Query:"""
+            search_queries = llm.invoke(search_query_prompt).content.strip()
 
-        search_query = llm.invoke(search_query_prompt).content.strip()
+            # Debugging: Display the generated search queries
+            st.write("Generated Search Queries:", search_queries)
 
-        # Debugging: Display the generated search query
-        st.write("Generated Search Query:", search_query)
+            # Step 2: Perform individual searches for each query
+            queries = search_queries.split("\n")  # Each query will be in a new line
 
-        # Step 2: Use the search query with Google Search Run
-        search_results = agent.run(search_query)
-
-        # Debugging: Display the raw search results
-        st.write("Search Results:", search_results)
-
-        # Step 3: Extract and validate URLs from search results
-        retrieved_images = []
-        for result in search_results.split("\n"):
-            if result.startswith("http"):  # Check if the result is a URL
+            all_retrieved_images = []
+            for query in queries:
                 try:
-                    response = requests.get(result, timeout=5)  # Add timeout for robustness
-                    if response.status_code == 200 and "image" in response.headers["Content-Type"]:
-                        img = Image.open(BytesIO(response.content))
-                        retrieved_images.append((img, result))
-                    else:
-                        st.write(f"Skipping non-image URL: {result}")
+                    # Perform the search using each query
+                    search_results = agent.run(query)
+
+                    # Extract and validate URLs from search results
+                    for result in search_results.split("\n"):
+                        if result.startswith("http"):  # Check if the result is a URL
+                            try:
+                                response = requests.get(result, timeout=5)  # Add timeout for robustness
+                                if response.status_code == 200 and "image" in response.headers["Content-Type"]:
+                                    img = Image.open(BytesIO(response.content))
+                                    all_retrieved_images.append((img, result))
+                                else:
+                                    st.write(f"Skipping non-image URL: {result}")
+                            except Exception as e:
+                                st.write(f"Error retrieving image from {result}: {e}")
                 except Exception as e:
-                    st.write(f"Error retrieving image from {result}: {e}")
+                    st.write(f"Error during image search for query '{query}': {e}")
 
-        # Step 4: Display the images
-        st.subheader("Retrieved Images")
-        if retrieved_images:
-            for img, url in retrieved_images:
-                st.image(img, caption=url, use_column_width=True)
-        else:
-            st.write("No valid images retrieved.")
+            # Step 3: Display the images
+            st.subheader("Retrieved Images")
+            if all_retrieved_images:
+                for img, url in all_retrieved_images:
+                    st.image(img, caption=url, use_column_width=True)
+            else:
+                st.write("No valid images retrieved.")
 
-    except Exception as e:
-        st.error(f"Error during image search: {e}")
+        except Exception as e:
+            st.error(f"Error during image search: {e}")
 
 # Display opinion if generated
 if st.session_state["generated_opinion"]:
