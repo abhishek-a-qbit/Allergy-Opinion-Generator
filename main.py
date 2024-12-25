@@ -149,7 +149,7 @@ if st.session_state["generated_questions"]:
             You are an expert allergist. Based on the following questions, write concise search queries to find relevant allergen images:
             Questions: {st.session_state['generated_questions']}
             
-            Generate separate queries for the allergens or symptoms mentioned in the questions:
+            Generate separate queries that include the word 'image' to prioritize image results for each allergen or symptom:
             Search Queries:"""
 
             search_queries = llm.invoke(search_query_prompt).content.strip()
