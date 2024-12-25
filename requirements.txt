@@ -3,5 +3,6 @@ docx2txt
 langchain_community 
 langchain
 langchain_google_community
+google-api-python-client
 langchain-openai 
 faiss-cpu
