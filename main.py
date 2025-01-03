@@ -24,7 +24,7 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 generate_questions_template = """ you are an expert allergy specialist. 
 Analyze the test report which is given as the query/Question.
 Given the following Context, generate 10 specific questions asking the patient 
-whether they have the corresponding symptoms in the context if the test report/query has the condition "Positive". I dont need headings, summary or numberings. 
+whether they have the corresponding symptoms in the context if the test report/query has the condition "Positive". I dont need summary or numberings. 
 format the questions as per the below example:
 
   [CHAT_STATES.FIRST_VISIT_SYMPTOMS]: "What problem or symptoms do you have?",
