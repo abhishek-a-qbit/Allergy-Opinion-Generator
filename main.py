@@ -24,26 +24,7 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 generate_questions_template = """ you are an expert allergy specialist. 
 Analyze the test report which is given as the query/Question.
 Given the following Context, generate 10 specific questions asking the patient 
-whether they have the corresponding symptoms in the context if the test report/query has the condition "Positive". I dont need summary or numbering but the formatting is necessary. 
-format the questions as per the below example:
-
-  [CHAT_STATES.FIRST_VISIT_SYMPTOMS]: "What problem or symptoms do you have?",
-  [CHAT_STATES.FIRST_VISIT_DURATION]: "From how long is your symptoms present, please tell me from the first time it started?",
-  [CHAT_STATES.FIRST_VISIT_INCREASE]: "Does your symptoms increased in the last few weeks or months if yes please tell me how many months it has increased?",
-  [CHAT_STATES.FIRST_VISIT_FREQUENCY]: "Do you have symptoms most of the days? Or few days in a week?",
-  [CHAT_STATES.FIRST_VISIT_YEARLY]: "Do you have symptoms throughout the year in all seasons or only few months in a year?",
-  [CHAT_STATES.FIRST_VISIT_MONTHS]: "Does your symptoms are severe in certain months of the year?",
-  [CHAT_STATES.FIRST_VISIT_TIME]: "At what time of the day or night is your symptoms more?",
-  [CHAT_STATES.FIRST_VISIT_OTHER]: "Do you have any other symptoms like cough, wheezing breathing difficulty, Skin allergy, Food Allergy, Drug Allergy",
-  [CHAT_STATES.FIRST_VISIT_HEALTH]: "Do you have any other health conditions like High Blood pressure, Diabetes, Heart Issues etc",
-  [CHAT_STATES.FIRST_VISIT_FAMILY]: "Does any of your family members have sneezing, wheezing, breathing difficulty, skin allergy, food allergy, drug allergy",
-  [CHAT_STATES.FIRST_VISIT_TESTS]: "Have you undergone any allergy test in the past if yes then attach the report",
-  [CHAT_STATES.FOLLOWUP_LAST_VISIT]: "When was your last consultation with Dr. Balachandra?",
-  [CHAT_STATES.FOLLOWUP_MEDICATION]: "Are you taking the prescribed medications regularly?",
-  [CHAT_STATES.FOLLOWUP_IMPROVEMENT]: "How much improvement do you notice in your symptoms? (0-100%)",
-  [CHAT_STATES.FOLLOWUP_SYMPTOMS]: "Are you still experiencing any of your previous symptoms?",
-  [CHAT_STATES.FOLLOWUP_NEW_SYMPTOMS]: "Have you developed any new symptoms since your last visit?",
-  [CHAT_STATES.FOLLOWUP_SIDE_EFFECTS]: "Are you experiencing any side effects from the medications?"
+whether they have the corresponding symptoms in the context if the test report/query has the condition "Positive". the questions must be generated in kannada.
 
 Question: {question}
 Context: {context}
