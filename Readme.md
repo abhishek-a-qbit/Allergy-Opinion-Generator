@@ -104,7 +104,7 @@ Typical Workflow
 ---
 
 Repository Structure
-
+'''
 Allergy-Opinion-Generator/
 ├── .devcontainer/           # Dev container config
 ├── main.py                  # Streamlit application entry point
@@ -117,7 +117,7 @@ Allergy-Opinion-Generator/
 ├── PARVESH A2112.docx       # Sample patient report
 ├── temp_response.docx       # Example generated opinion
 └── temp_test_report.docx    # Example processed report
-
+'''
 
 ---
 
