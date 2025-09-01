@@ -104,7 +104,7 @@ Typical Workflow
 ---
 
 Repository Structure
-'''
+'''plaintext
 Allergy-Opinion-Generator/
 ├── .devcontainer/           # Dev container config
 ├── main.py                  # Streamlit application entry point
